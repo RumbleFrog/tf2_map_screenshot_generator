@@ -49,10 +49,14 @@ class GameMapRunner(object):
 		self.pp_stitch_exec = pp_stitch_exec
 		with open(metadata_filename) as data_file:
 			self.metadata = json.loads(data_file.read())
+		print(metadata_filename)
+		print(self.metadata)
 
 	def __getMapMetadata(self, map_name):
-		return self.metadata[map_name]
-
+		if map_name in self.metadata:
+			return self.metadata[map_name]
+		else:
+			return None
 	def __saveMetadataToFolder(self, map_name):
 		metadata = self.__getMapMetadata(map_name)
 		if metadata is not None:
@@ -70,6 +74,7 @@ class GameMapRunner(object):
 		i = 0
 		maps = self.gc.getNotProcessedMapsInTFFolder()
 		for map_name in maps:
+			print(map_name)
 			metadata = self.__getMapMetadata(map_name)
 			if metadata == None:
 				print("Found a gamemap called '{}', but did not found metadata for this map, skipping this map.".format(map_name))
@@ -191,7 +196,7 @@ class GameMapRunner(object):
 				filename = '{}/{}/{}.png'.format(self.screenshots_storage_dir, map_name, image)
 				os.remove(filename)
 
-	def __generateOverviewScreenshotsForMaps(map_name):
+	def __generateOverviewScreenshotsForMaps(self, map_name):
 		self.gc.prepareForOverviewScreenshots()
 		metadata = self.__getMapMetadata(map_name)
 
@@ -202,12 +207,12 @@ class GameMapRunner(object):
 			ypos = pos["z"]+y
 			if ypos < 0:
 				ypos = 0
-			this.gc.setCorrectOverview(pos, ypos, scale)
-			this.__makeScreenshot(map_name, '{}_{}'.format('overview', i))
+			self.gc.setCorrectOverview(pos, ypos, scale)
+			self.__makeScreenshot(map_name, '{}_{}'.format('overview', i))
 			i += 1
 
 		if self.post_process == True:
-			this.__mergeOverviewScreenshots(map_name)
+			self.__mergeOverviewScreenshots(map_name)
 
 	def __mergeOverviewScreenshots(self, map_name):
 		full_path_overviews = sorted(glob.glob('{}/{}/overview_*.png'.format(self.screenshots_storage_dir, map_name)))
@@ -274,10 +279,10 @@ class GameMapRunner(object):
 
 if __name__ == '__main__':
 	# System specific settings
-	METADATA_FILENAME = './metadata/bsp_maps_metadata_community3.json'
+	METADATA_FILENAME = './metadata/bsp_maps_metadata.json'
 	tasks = [GameMapRunner.TASK_SPECTATOR_CAMS, GameMapRunner.TASK_LEVELOVERVIEW]
-	game_base_dir = '/home/sander/.local/share/Steam/steamapps/common/Team Fortress 2/'
-	screenshots_storage_dir = '/home/sander/tf2/screenshots'
+	game_base_dir = '/home/z/.local/share/Steam/steamapps/common/Team Fortress 2'
+	screenshots_storage_dir = '/home/z/.local/share/Steam/steamapps/common/Team Fortress 2/tf/screenshots'
 	# Main call
-	runner = GameMapRunner()
-	runner.gatherScreenshotsBasedOnMetadata(metadata_filename=METADATA_FILENAME, tasks=tasks, game_base_dir=game_base_dir, screenshots_storage_dir=screenshots_storage_dir)
+	runner = GameMapRunner(metadata_filename=METADATA_FILENAME, game_base_dir=game_base_dir, screenshots_storage_dir=screenshots_storage_dir)
+	runner.gatherScreenshotsBasedOnMetadata(metadata_filename=METADATA_FILENAME, tasks=tasks)

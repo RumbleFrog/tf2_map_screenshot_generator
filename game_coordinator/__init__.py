@@ -20,8 +20,9 @@ class GameCoordinator(object):
 		Contructor
 		"""
 		self.game_p = None
-		self.game_base_dir = game_base_dir
-		self.maps_dir = '{}tf/maps/'.format(game_base_dir)
+		self.screenshots_storage_dir = '/home/z/.local/share/Steam/steamapps/common/Team Fortress 2/tf/screenshots'
+		self.game_base_dir = '/home/z/.local/share/Steam/steamapps/common/Team Fortress 2'
+		self.maps_dir = '{}/tf/maps/'.format(game_base_dir)
 		self.default_game_start_wait = default_game_start_wait
 		self.default_map_switch_wait = default_map_switch_wait
 
@@ -38,7 +39,7 @@ class GameCoordinator(object):
 		if self.isTF2Running() == True:
 			raise FatalGameMapRunnerException("Team Fortress 2 is currently running.")
 		print("Attempting to start game ...")
-		self.game_p = subprocess.Popen([self.usr_steam_exec,'-applaunch', '440', 
+		self.game_p = subprocess.Popen(['/usr/bin/steam','-applaunch', '440', 
 										   '-nosound',
 										   '-novid'
 										   ],
@@ -75,6 +76,7 @@ class GameCoordinator(object):
 	def getAllMapsInTFFolder(self):
 		maps = []
 		full_path_maps = glob.glob("{}*.bsp".format(self.maps_dir))
+		print("{}*.bsp".format(self.maps_dir))
 		for full_path_map in full_path_maps:
 			path_parts = full_path_map.split('/')
 			map_name = path_parts[-1].split('.')[0]
@@ -83,14 +85,14 @@ class GameCoordinator(object):
 
 	def getNotProcessedMapsInTFFolder(self):
 		filtered_maps = []
-		maps = getAllMapsInFolder()
+		maps = self.getAllMapsInTFFolder()
 		folders = [name for name in os.listdir(self.screenshots_storage_dir) if os.path.isdir("{}/{}".format(self.screenshots_storage_dir, name))]
 		for map_name in maps:
 			if map_name not in folders:
 				filtered_maps.append(map_name)
 		return filtered_maps
 
-	def __sendCommand(cmd):
+	def __sendCommand(self, cmd):
 		typewrite("{}\n".format(cmd))
 		time.sleep(0.5)
 
@@ -109,7 +111,7 @@ class GameCoordinator(object):
 		print("Loaded map {}".format(map_name))
 		return
 
-	def clickScreen():
+	def clickScreen(self):
 		pyautogui.click(x=1233, y=669)
 
 	def isMapLoaded(self):

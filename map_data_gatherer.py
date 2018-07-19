@@ -273,8 +273,8 @@ class MapDataGatherer(object):
 if __name__ == '__main__':
 	# System specific settings
 	# Make sure your path is set correct, and the BSPSource .jar is also in the same as this script.
-	JAVA_EXEC = 'C:\\ProgramData\\Oracle\\Java\\javapath\\java.exe'
-	MAPS_DIR = 'Z:\\TMP TF2 DUMP\\rc_tmp'
+	JAVA_EXEC = 'java'
+	MAPS_DIR = 'D:\\TFDB_Maps'
 	OUTPUT_FILENAME = 'bsp_maps_metadata.json'
 	# Main call
 	gatherer = MapDataGatherer(JAVA_EXEC)
